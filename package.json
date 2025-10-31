@@ -1,0 +1,40 @@
+{
+  "name": "interactive-worlds",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.58",
+    "@ai-sdk/react": "^2.0.82",
+    "@openrouter/ai-sdk-provider": "^1.2.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "ai": "^5.0.82",
+    "autoprefixer": "^10.4.21",
+    "better-sqlite3": "^12.4.1",
+    "date-fns": "^4.1.0",
+    "litellm": "^0.12.0",
+    "lucide-react": "^0.552.0",
+    "next": "^16.0.1",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "tailwindcss": "^3.4.18",
+    "typescript": "^5.9.3",
+    "zustand": "^5.0.8"
+  }
+}
