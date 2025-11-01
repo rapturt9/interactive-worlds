@@ -7,7 +7,7 @@ import { WorldParameters, ModelTier } from '@/types';
 
 export default function Home() {
   const [isWorldCreated, setIsWorldCreated] = useState(false);
-  const [modelTier, setModelTier] = useState<ModelTier>('free');
+  const [modelTier, setModelTier] = useState<ModelTier>('budget');
   const [worldParams, setWorldParams] = useState<WorldParameters>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [storyBible, setStoryBible] = useState<string>('');
@@ -139,14 +139,14 @@ export default function Home() {
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <button
-                    onClick={() => setModelTier('free')}
+                    onClick={() => setModelTier('budget')}
                     className={`p-4 rounded-lg border-2 transition-all ${
-                      modelTier === 'free'
+                      modelTier === 'budget'
                         ? 'border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30'
                         : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
                     }`}
                   >
-                    <div className="font-semibold text-slate-900 dark:text-slate-100">Free</div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100">Budget</div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                       Gemini Flash + Claude Haiku
                     </div>
@@ -267,7 +267,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold">Interactive Worlds</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
-              {modelTier === 'free' ? 'Free Tier' : 'Pro Tier'}
+              {modelTier === 'budget' ? 'Free Tier' : 'Pro Tier'}
             </span>
             <button
               onClick={() => {

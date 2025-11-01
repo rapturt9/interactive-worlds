@@ -2,12 +2,139 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Parchment Theme Variables */
+:root.light-parchment {
+  --bg-primary: #f5f1e8;
+  --bg-secondary: #ede7db;
+  --bg-tertiary: #e8dcc4;
+  --text-primary: #3a3226;
+  --text-secondary: #5c513f;
+  --text-muted: #8b7d65;
+  --accent: #8b6f47;
+  --accent-hover: #6d5638;
+  --border: #d4c4a8;
+  --overlay: rgba(0, 0, 0, 0.3);
+}
+
+:root.dark-parchment {
+  --bg-primary: #1a1410;
+  --bg-secondary: #2b2419;
+  --bg-tertiary: #3d3326;
+  --text-primary: #e8dcc4;
+  --text-secondary: #c9b89a;
+  --text-muted: #a89a7e;
+  --accent: #c9a86a;
+  --accent-hover: #e0c088;
+  --border: #4a3f2f;
+  --overlay: rgba(0, 0, 0, 0.6);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+}
+
+/* Parchment texture overlay - very subtle */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  background-image:
+    /* Very subtle noise */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Ensure content is above texture */
+body > #__next,
+body > div[data-clerk-provider] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 8px;
+  border: 3px solid var(--bg-secondary);
+  min-height: 40px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+  border-width: 2px;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--accent);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: var(--accent) var(--bg-secondary);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .bg-parchment-primary {
+    background-color: var(--bg-primary);
+    position: relative;
+  }
+
+  .bg-parchment-secondary {
+    background-color: var(--bg-secondary);
+    position: relative;
+  }
+
+  .bg-parchment-tertiary {
+    background-color: var(--bg-tertiary);
+    position: relative;
+  }
+
+  .text-parchment-primary {
+    color: var(--text-primary);
+  }
+
+  .text-parchment-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-parchment-muted {
+    color: var(--text-muted);
+  }
+
+  .border-parchment {
+    border-color: var(--border);
+  }
+
+  .accent-parchment {
+    color: var(--accent);
+  }
+
+  .bg-accent-parchment {
+    background-color: var(--accent);
   }
 }

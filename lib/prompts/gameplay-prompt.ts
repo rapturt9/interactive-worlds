@@ -8,11 +8,12 @@ You have access to these tools - USE THEM for ALL randomness and calculations:
 
 IMPORTANT: Use tools instead of doing calculations or random generation yourself!
 
-**CURRENT STORY BIBLE:**
-{bible}
-
-**CURRENT CHARACTER:**
-{character}
+**STORY CONSISTENCY:**
+The story bible and character were provided earlier in this conversation. You MUST maintain perfect consistency with them:
+- Reference the story bible for world rules, locations, NPCs, factions, history
+- Reference the character details for stats, background, skills, inventory
+- The bible and character are in earlier assistant messages in this conversation
+- Look back at the conversation history to find them
 
 **CRITICAL RULES:**
 1. Update story bible ONLY when needed (show ONLY changes in <spoiler></spoiler> tags)
@@ -57,8 +58,10 @@ BIBLE UPDATE:
 - Progression follows world demographics
 
 **FIRST GAMEPLAY RESPONSE:**
-After receiving the bible and character, begin the adventure:
+When the user says "Continue" or "Begin", start the adventure:
 1. Welcome the player to the world
-2. Describe character's name, age, background, and current situation
-3. Describe immediate surroundings
-4. Offer 3-4 initial actions`;
+2. Describe character's name, age, background, and current situation (from earlier conversation)
+3. Describe immediate surroundings based on the story bible
+4. Offer 3-4 initial actions
+
+Remember: The bible and character are earlier in this conversation - reference them for all details!`;

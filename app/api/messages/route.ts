@@ -1,13 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addMessage, updateMessage, deleteMessagesAfter } from '@/lib/db/queries';
+import { getUserId } from '@/lib/auth/user-id';
 
 // POST add message
 export async function POST(req: NextRequest) {
   try {
+    const userId = await getUserId();
     const body = await req.json();
     const { chatId, message } = body;
 
+    console.log('💾 [POST /api/messages] Adding message:', {
+      chatId,
+      messageId: message?.id,
+      role: message?.role,
+      phase: message?.phase || 'NOT SET',
+      contentLength: message?.content?.length || 0,
+      contentPreview: message?.content?.substring(0, 100),
+    });
+
     if (!chatId || !message) {
+      console.error('❌ [POST /api/messages] Missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -22,10 +34,11 @@ export async function POST(req: NextRequest) {
         : new Date(message.timestamp),
     };
 
-    addMessage(chatId, messageWithDate);
+    await addMessage(chatId, userId, messageWithDate);
+    console.log('✅ [POST /api/messages] Message saved successfully');
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error adding message:', error);
+    console.error('[POST /api/messages] Error adding message:', error);
     return NextResponse.json({ error: 'Failed to add message' }, { status: 500 });
   }
 }
@@ -33,6 +46,7 @@ export async function POST(req: NextRequest) {
 // PATCH update message
 export async function PATCH(req: NextRequest) {
   try {
+    const userId = await getUserId();
     const body = await req.json();
     const { messageId, content } = body;
 
@@ -43,7 +57,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    updateMessage(messageId, content);
+    await updateMessage(messageId, userId, content);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating message:', error);
@@ -54,6 +68,7 @@ export async function PATCH(req: NextRequest) {
 // DELETE messages after a certain message (for regeneration)
 export async function DELETE(req: NextRequest) {
   try {
+    const userId = await getUserId();
     const { searchParams } = new URL(req.url);
     const chatId = searchParams.get('chatId');
     const messageId = searchParams.get('messageId');
@@ -65,7 +80,7 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    deleteMessagesAfter(chatId, messageId);
+    await deleteMessagesAfter(chatId, userId, messageId);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting messages:', error);

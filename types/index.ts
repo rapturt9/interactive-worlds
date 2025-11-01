@@ -3,6 +3,7 @@ export interface Message {
   role: "user" | "assistant" | "system";
   content: string;
   timestamp: Date;
+  phase?: string; // world, character, chat0, chat1, etc.
 }
 
 export interface World {
@@ -11,8 +12,12 @@ export interface World {
   description?: string;
   createdAt: Date;
   updatedAt: Date;
-  modelTier: "free" | "pro";
-  storyBible?: string;
+  modelTier: "budget" | "pro";
+  bibleContent?: string; // Current bible (gets updated with summaries)
+  originalBibleContent?: string; // Original bible (never changes)
+  characterContent?: string; // Character sheet (gets updated)
+  generationPhase?: string; // world, character, chat0, chat1, etc.
+  conversationState?: "world_generation" | "gameplay";
   parameters?: WorldParameters;
 }
 
@@ -40,7 +45,7 @@ export interface Chat {
   turnNumber: number;
 }
 
-export type ModelTier = "free" | "pro";
+export type ModelTier = "budget" | "pro";
 
 export interface ModelConfig {
   storytelling: string;
@@ -48,7 +53,7 @@ export interface ModelConfig {
 }
 
 export const MODEL_CONFIGS: Record<ModelTier, ModelConfig> = {
-  free: {
+  budget: {
     storytelling: "anthropic/claude-haiku-4.5",
     management: "google/gemini-2.5-flash",
   },

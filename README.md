@@ -5,6 +5,7 @@ An immersive text-based adventure platform with persistent worlds, dynamic story
 ## Features (MVP - Phase 1)
 
  **Story Module**
+
 - Comprehensive world generation with hidden plots, conspiracies, and traps
 - Story bible system that updates dynamically
 - Spoiler tags for hidden information
@@ -12,17 +13,20 @@ An immersive text-based adventure platform with persistent worlds, dynamic story
 - No plot armor - realistic stakes and consequences
 
  **Chat Interface**
+
 - Clean, responsive UI with markdown support
 - Collapsible spoiler blocks for hidden information
 - Edit previous messages to explore different paths
 - Real-time streaming responses
 
  **Dual Model Architecture**
+
 - **Free Tier**: Gemini 2.0 Flash + Claude 3.5 Haiku
 - **Pro Tier**: Gemini Exp 1206 + Claude Sonnet 4
 - Prompt caching for cost efficiency and speed
 
  **World Customization**
+
 - Specify world type (cultivation fantasy, space opera, etc.)
 - Custom power systems
 - Starting social class
@@ -31,33 +35,39 @@ An immersive text-based adventure platform with persistent worlds, dynamic story
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - OpenRouter API key (get one at [openrouter.ai](https://openrouter.ai))
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <your-repo-url>
 cd interactive-worlds
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` and add your OpenRouter API key:
+
 ```
 OPENROUTER_API_KEY=your_key_here
 ```
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -88,6 +98,7 @@ npm run dev
 ### Understanding the Game
 
 **Core Principles:**
+
 - **Predetermined World**: Everything exists before you interact with it
 - **Realistic Stakes**: Death, disease, and accidents can happen
 - **No Plot Armor**: Success is not guaranteed
@@ -96,6 +107,7 @@ npm run dev
 
 **Story Bible:**
 The game maintains a hidden "story bible" containing:
+
 - World foundation (power systems, economy, politics)
 - Predetermined elements (locations, NPCs, opportunities)
 - Your character status
@@ -105,11 +117,13 @@ The game maintains a hidden "story bible" containing:
 ## Model Costs (Approximate)
 
 ### Free Tier
+
 - ~$0.10-0.30 per 100-300 turn adventure
 - Faster responses with Gemini Flash
 - Good quality with Claude Haiku
 
 ### Pro Tier
+
 - ~$2-5 per 100-300 turn adventure
 - Best storytelling with Claude Sonnet 4
 - Better world consistency with Gemini Pro
@@ -117,22 +131,26 @@ The game maintains a hidden "story bible" containing:
 ## Roadmap
 
 ### Phase 2: Summarization Module (Coming Soon)
+
 - Automatic conversation summarization
 - Infinite context management
 - Gemini updates full bible in background
 - Never lose progress
 
 ### Phase 3: Randomization Module
+
 - LLM-executed dice rolls
 - Math calculations for resources
 - Probability-based events
 
 ### Phase 4: Status Card Module
+
 - Real-time character stats display
 - Automatic updates from story events
 - Resource tracking with calculations
 
 ### Phase 5+
+
 - Learning module (real-world skills teaching)
 - Entity module (relationship graphs)
 - RAG module (infinite memory)
@@ -162,11 +180,13 @@ npm run build
 
 # Start production server
 npm start
+
+quibbler hook server
 ```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel budget to submit a Pull Request.
 
 ## License
 

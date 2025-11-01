@@ -1,7 +1,6 @@
-import { streamText, stepCountIs, UIMessage, convertToModelMessages } from "ai";
+import { streamText, UIMessage, stepCountIs, convertToModelMessages } from "ai";
 import { getStorytellingModel } from "@/lib/llm/client";
 import { GAMEPLAY_PROMPT_TEMPLATE } from "@/lib/prompts/gameplay-prompt";
-import { injectContentIntoPrompt } from "@/lib/utils/tag-parser";
 import { allTools } from "@/lib/tools/ai-tools";
 import { NextRequest } from "next/server";
 
@@ -9,12 +8,7 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      messages,
-      modelTier = "free",
-      bibleContent,
-      characterContent,
-    } = await req.json();
+    const { messages, modelTier = "budget" } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return new Response("Invalid request: messages array required", {
@@ -24,36 +18,75 @@ export async function POST(req: NextRequest) {
 
     const model = getStorytellingModel(modelTier);
 
-    // Inject bible and character content into gameplay prompt template
-    const gameplayPrompt = injectContentIntoPrompt(GAMEPLAY_PROMPT_TEMPLATE, {
-      bible: bibleContent || "",
-      character: characterContent || "",
+    // Use base gameplay prompt (bible and character are in conversation history)
+    const gameplayPrompt = GAMEPLAY_PROMPT_TEMPLATE;
+
+    console.log("\n🔍 === CHAT/GAMEPLAY API CALLED ===");
+    console.log("📨 Request details:");
+    console.log("   Model tier:", modelTier);
+    console.log("   Message count:", messages.length);
+    console.log(
+      "   Using continuous conversation with bible/character in history"
+    );
+
+    console.log("\n📚 Incoming messages:");
+    messages.forEach((msg: any, idx: number) => {
+      console.log(
+        `   [${idx}] ${msg.role}: ${
+          msg.parts ? msg.parts.length + " parts" : "no parts"
+        }`
+      );
     });
 
-    const uiMessages = messages as UIMessage[];
-    console.log("Chat - Initial messages structure:", JSON.stringify(uiMessages, null, 2));
-    console.log("Chat - About to call convertToModelMessages");
+    console.log("\n🔄 About to call convertToModelMessages");
 
     let convertedMessages;
     try {
-      convertedMessages = convertToModelMessages(uiMessages as Array<Omit<UIMessage, 'id'>>);
-      console.log("Chat - Converted messages successfully:", JSON.stringify(convertedMessages, null, 2));
+      convertedMessages = convertToModelMessages(messages);
+      console.log("✅ Converted messages successfully!");
     } catch (conversionError) {
-      console.error("Chat - Error in convertToModelMessages:", conversionError);
+      console.error("❌ Error in convertToModelMessages:", conversionError);
       throw conversionError;
     }
 
+    // Prepend system prompt as a system message instead of using system parameter
+    // Note: convertToModelMessages already handles reasoning parts correctly
+    const messagesWithSystem = [
+      {
+        role: "system" as const,
+        content: gameplayPrompt,
+      },
+      ...convertedMessages,
+    ];
+
+    console.log(
+      "\n📝 Using system prompt: GAMEPLAY_PROMPT_TEMPLATE (base template, no injection)"
+    );
+    console.log(
+      "📝 System prompt preview:",
+      gameplayPrompt.substring(0, 200) + "..."
+    );
+    console.log("\n🚀 FINAL CONVERSATION BEING SENT TO MODEL:");
+    console.log(
+      "   Messages count (including system):",
+      messagesWithSystem.length
+    );
+    messagesWithSystem.forEach((msg: any, idx: number) => {
+      const preview = JSON.stringify(msg).substring(0, 150);
+      console.log(`   [${idx}] ${msg.role}: ${preview}...`);
+    });
+
+    // Extended thinking enabled with exclude to prevent format conflicts on continuation
     const result = streamText({
       model,
-      system: gameplayPrompt,
-      messages: convertedMessages,
-      stopWhen: stepCountIs(10),
+      messages: messagesWithSystem,
       tools: allTools,
       temperature: 0.8,
+      stopWhen: stepCountIs(50),
       providerOptions: {
         openrouter: {
           cacheControl: { type: "ephemeral" },
-          reasoning: { effort: "high" },
+          reasoning: { exclude: true, effort: "high" },
         },
       },
     });

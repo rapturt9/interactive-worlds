@@ -45,6 +45,9 @@ export async function parseUIMessageStream(
         const jsonStr = line.slice(6); // Remove 'data: ' prefix
         const data = JSON.parse(jsonStr);
 
+        // 🔍 DEBUG: Log every stream event
+        console.log('📨 Stream event:', data.type, data);
+
         // Handle different message chunk types
         switch (data.type) {
           case 'text-delta':
@@ -54,22 +57,28 @@ export async function parseUIMessageStream(
             }
             break;
 
+          case 'text':
+            if (data.text) {
+              fullText += data.text;
+              onUpdate(fullText, allParts);
+            }
+            break;
+
           case 'reasoning-delta':
             if (data.delta) {
-              // Find or create reasoning part
-              let reasoningPart = allParts.find(p => p.type === 'reasoning' && p.id === data.id);
+              // Find or create reasoning part (without id to match ChatMessage expectations)
+              let reasoningPart = allParts.find(p => p.type === 'reasoning');
               if (!reasoningPart) {
-                reasoningPart = { type: 'reasoning', id: data.id, text: '' };
+                reasoningPart = { type: 'reasoning', text: '' };
                 allParts.push(reasoningPart);
               }
               reasoningPart.text = (reasoningPart.text || '') + data.delta;
-              // DON'T add reasoning to fullText yet - it's separate
               onUpdate(fullText, allParts);
             }
             break;
 
           case 'tool-call':
-            // Add tool call part
+            // Add tool call part (legacy format)
             allParts.push({
               type: `tool-call-${data.toolName}`,
               toolName: data.toolName,
@@ -79,13 +88,37 @@ export async function parseUIMessageStream(
             onUpdate(fullText, allParts);
             break;
 
+          case 'tool-input-available':
+            // AI SDK actual format for tool calls
+            console.log('🔧 Tool call detected:', data.toolName, 'with input:', data.input);
+            allParts.push({
+              type: `tool-call-${data.toolName}`,
+              toolName: data.toolName,
+              args: data.input,
+              toolCallId: data.toolCallId,
+            });
+            onUpdate(fullText, allParts);
+            break;
+
           case 'tool-result':
-            // Add tool result part
+            // Add tool result part (legacy format)
             allParts.push({
               type: 'tool-result',
               toolCallId: data.toolCallId,
               toolName: data.toolName,
               result: data.result,
+            });
+            onUpdate(fullText, allParts);
+            break;
+
+          case 'tool-output-available':
+            // AI SDK actual format for tool results
+            console.log('✅ Tool result received:', data.toolName, 'output:', data.output);
+            allParts.push({
+              type: 'tool-result',
+              toolCallId: data.toolCallId,
+              toolName: data.toolName,
+              result: data.output,
             });
             onUpdate(fullText, allParts);
             break;
@@ -102,7 +135,13 @@ export async function parseUIMessageStream(
     }
   }
 
-  // After streaming is complete, combine text and reasoning for fullText
+  // After streaming is complete, ensure there's always a text part
+  // This is needed for ChatMessage component to display text in UIMessage format
+  if (fullText && !allParts.find(p => p.type === 'text')) {
+    allParts.unshift({ type: 'text', text: fullText });
+  }
+
+  // Combine text and reasoning for fullText content
   // This is needed for parsing XML tags that might be in either section
   const reasoningText = allParts
     .filter(p => p.type === 'reasoning')
@@ -110,6 +149,13 @@ export async function parseUIMessageStream(
     .join('\n\n');
 
   const combinedContent = fullText + (reasoningText ? '\n\n' + reasoningText : '');
+
+  // 🔍 DEBUG: Log final parsed result
+  console.log('📦 Stream parsing complete:', {
+    contentLength: combinedContent.length,
+    partsCount: allParts.length,
+    partTypes: allParts.map(p => p.type),
+  });
 
   return { content: combinedContent, parts: allParts };
 }

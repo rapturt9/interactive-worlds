@@ -1,14 +1,23 @@
-import db from './schema';
+import { sql } from './schema';
 import { Chat, Message, WorldParameters, ModelTier } from '@/types';
 
+/**
+ * TIMESTAMP STRATEGY:
+ * - All timestamps use TIMESTAMPTZ columns with NOW() for server time
+ * - PostgreSQL stores all timestamps in UTC internally
+ * - Timestamps are automatically converted to/from UTC when sent to clients
+ * - This ensures consistent ordering and proper timezone handling
+ */
+
 // Chat queries
-export function getAllChats(): Chat[] {
-  const rows = db.prepare(`
-    SELECT id, title, model_tier as modelTier, created_at as createdAt,
-           updated_at as updatedAt, story_bible as storyBible, world_params as worldParams
+export async function getAllChats(userId: string): Promise<Chat[]> {
+  const rows = await sql`
+    SELECT id, title, model_tier as "modelTier", created_at as "createdAt",
+           updated_at as "updatedAt", world_params as "worldParams"
     FROM chats
+    WHERE user_id = ${userId}
     ORDER BY updated_at DESC
-  `).all() as any[];
+  `;
 
   return rows.map(row => ({
     id: row.id,
@@ -21,17 +30,22 @@ export function getAllChats(): Chat[] {
   }));
 }
 
-export function getChat(chatId: string) {
-  const row = db.prepare(`
-    SELECT id, title, model_tier as modelTier, created_at as createdAt,
-           updated_at as updatedAt, story_bible as storyBible, world_params as worldParams,
-           bible_content as bibleContent, character_content as characterContent,
-           conversation_state as conversationState, chat_name_override as chatNameOverride
+export async function getChat(chatId: string, userId: string) {
+  const rows = await sql`
+    SELECT id, title, model_tier as "modelTier", created_at as "createdAt",
+           updated_at as "updatedAt", world_params as "worldParams",
+           bible_content as "bibleContent", character_content as "characterContent",
+           conversation_state as "conversationState", generation_phase as "generationPhase",
+           original_bible_content as "originalBibleContent"
     FROM chats
-    WHERE id = ?
-  `).get(chatId) as any;
+    WHERE id = ${chatId} AND user_id = ${userId}
+  `;
 
-  if (!row) return null;
+  if (rows.length === 0) {
+    return null;
+  }
+
+  const row = rows[0];
 
   return {
     id: row.id,
@@ -39,143 +53,140 @@ export function getChat(chatId: string) {
     modelTier: row.modelTier as ModelTier,
     createdAt: new Date(row.createdAt),
     updatedAt: new Date(row.updatedAt),
-    storyBible: row.storyBible,
-    worldParams: row.worldParams ? JSON.parse(row.worldParams) : null,
+    worldParams: row.worldParams || null,
     bibleContent: row.bibleContent,
     characterContent: row.characterContent,
     conversationState: row.conversationState || 'world_generation',
-    chatNameOverride: row.chatNameOverride,
+    generationPhase: row.generationPhase || 'world',
+    originalBibleContent: row.originalBibleContent,
   };
 }
 
-export function createChat(params: {
+export async function createChat(params: {
   id: string;
+  userId: string;
   title: string;
   modelTier: ModelTier;
   worldParams?: WorldParameters;
 }) {
-  db.prepare(`
-    INSERT INTO chats (id, title, model_tier, created_at, updated_at, world_params)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(
-    params.id,
-    params.title,
-    params.modelTier,
-    Date.now(),
-    Date.now(),
-    params.worldParams ? JSON.stringify(params.worldParams) : null
-  );
+  await sql`
+    INSERT INTO chats (id, user_id, title, model_tier, world_params, created_at, updated_at)
+    VALUES (
+      ${params.id},
+      ${params.userId},
+      ${params.title},
+      ${params.modelTier},
+      ${params.worldParams ? JSON.stringify(params.worldParams) : null}::jsonb,
+      NOW(),
+      NOW()
+    )
+  `;
 }
 
-export function updateChat(chatId: string, updates: {
+export async function updateChat(chatId: string, userId: string, updates: {
   title?: string;
-  storyBible?: string;
   bibleContent?: string;
   characterContent?: string;
   conversationState?: string;
-  chatNameOverride?: string;
-  updatedAt?: number;
+  generationPhase?: string;
+  originalBibleContent?: string;
 }) {
-  const sets: string[] = [];
-  const values: any[] = [];
+  if (Object.keys(updates).length === 0) return;
 
+  // Execute individual update statements (simpler and safer with Neon's template literals)
   if (updates.title !== undefined) {
-    sets.push('title = ?');
-    values.push(updates.title);
-  }
-  if (updates.storyBible !== undefined) {
-    sets.push('story_bible = ?');
-    values.push(updates.storyBible);
+    await sql`UPDATE chats SET title = ${updates.title}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
   if (updates.bibleContent !== undefined) {
-    sets.push('bible_content = ?');
-    values.push(updates.bibleContent);
+    await sql`UPDATE chats SET bible_content = ${updates.bibleContent}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
   if (updates.characterContent !== undefined) {
-    sets.push('character_content = ?');
-    values.push(updates.characterContent);
+    await sql`UPDATE chats SET character_content = ${updates.characterContent}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
   if (updates.conversationState !== undefined) {
-    sets.push('conversation_state = ?');
-    values.push(updates.conversationState);
+    await sql`UPDATE chats SET conversation_state = ${updates.conversationState}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
-  if (updates.chatNameOverride !== undefined) {
-    sets.push('chat_name_override = ?');
-    values.push(updates.chatNameOverride);
+  if (updates.generationPhase !== undefined) {
+    await sql`UPDATE chats SET generation_phase = ${updates.generationPhase}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
-  if (updates.updatedAt !== undefined) {
-    sets.push('updated_at = ?');
-    values.push(updates.updatedAt);
-  } else {
-    sets.push('updated_at = ?');
-    values.push(Date.now());
+  if (updates.originalBibleContent !== undefined) {
+    await sql`UPDATE chats SET original_bible_content = ${updates.originalBibleContent}, updated_at = NOW() WHERE id = ${chatId} AND user_id = ${userId}`;
   }
-
-  if (sets.length === 0) return;
-
-  values.push(chatId);
-
-  db.prepare(`
-    UPDATE chats
-    SET ${sets.join(', ')}
-    WHERE id = ?
-  `).run(...values);
 }
 
-export function deleteChat(chatId: string) {
-  db.prepare('DELETE FROM chats WHERE id = ?').run(chatId);
+export async function deleteChat(chatId: string, userId: string) {
+  await sql`
+    DELETE FROM chats
+    WHERE id = ${chatId} AND user_id = ${userId}
+  `;
 }
 
 // Message queries
-export function getMessages(chatId: string): Message[] {
-  const rows = db.prepare(`
-    SELECT id, role, content, timestamp
-    FROM messages
-    WHERE chat_id = ?
-    ORDER BY timestamp ASC
-  `).all(chatId) as any[];
+export async function getMessages(chatId: string, userId: string, phase?: string): Promise<Message[]> {
+  const rows = phase
+    ? await sql`
+        SELECT id, role, content, timestamp, phase
+        FROM messages
+        WHERE chat_id = ${chatId} AND user_id = ${userId} AND phase = ${phase}
+        ORDER BY timestamp ASC
+      `
+    : await sql`
+        SELECT id, role, content, timestamp, phase
+        FROM messages
+        WHERE chat_id = ${chatId} AND user_id = ${userId}
+        ORDER BY timestamp ASC
+      `;
 
   return rows.map(row => ({
     id: row.id,
     role: row.role,
     content: row.content,
     timestamp: new Date(row.timestamp),
+    phase: row.phase,
   }));
 }
 
-export function addMessage(chatId: string, message: Message) {
-  db.prepare(`
-    INSERT INTO messages (id, chat_id, role, content, timestamp)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(
-    message.id,
-    chatId,
-    message.role,
-    message.content,
-    message.timestamp.getTime()
-  );
+export async function addMessage(chatId: string, userId: string, message: Message) {
+  await sql`
+    INSERT INTO messages (id, chat_id, user_id, phase, role, content, timestamp)
+    VALUES (
+      ${message.id},
+      ${chatId},
+      ${userId},
+      ${(message as any).phase || 'world'},
+      ${message.role},
+      ${message.content},
+      ${message.timestamp}
+    )
+  `;
 
-  // Update chat's updated_at
-  updateChat(chatId, { updatedAt: message.timestamp.getTime() });
+  // Update chat's updated_at using server time (consistent with createChat/updateChat)
+  await sql`
+    UPDATE chats
+    SET updated_at = NOW()
+    WHERE id = ${chatId} AND user_id = ${userId}
+  `;
 }
 
-export function updateMessage(messageId: string, content: string) {
-  db.prepare(`
+export async function updateMessage(messageId: string, userId: string, content: string) {
+  await sql`
     UPDATE messages
-    SET content = ?
-    WHERE id = ?
-  `).run(content, messageId);
+    SET content = ${content}
+    WHERE id = ${messageId} AND user_id = ${userId}
+  `;
 }
 
-export function deleteMessagesAfter(chatId: string, messageId: string) {
-  const message = db.prepare(`
-    SELECT timestamp FROM messages WHERE id = ?
-  `).get(messageId) as any;
+export async function deleteMessagesAfter(chatId: string, userId: string, messageId: string) {
+  const messages = await sql`
+    SELECT timestamp FROM messages
+    WHERE id = ${messageId} AND user_id = ${userId}
+  `;
 
-  if (message) {
-    db.prepare(`
+  if (messages.length > 0) {
+    const messageTimestamp = messages[0].timestamp;
+    await sql`
       DELETE FROM messages
-      WHERE chat_id = ? AND timestamp > ?
-    `).run(chatId, message.timestamp);
+      WHERE chat_id = ${chatId} AND user_id = ${userId} AND timestamp > ${messageTimestamp}
+    `;
   }
 }

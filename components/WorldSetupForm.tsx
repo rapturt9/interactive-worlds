@@ -1,15 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { WorldParameters, ModelTier } from '@/types';
+import { useState } from "react";
+import { WorldParameters, ModelTier } from "@/types";
 
 interface WorldSetupFormProps {
-  onSubmit: (params: { modelTier: ModelTier; worldParams: WorldParameters }) => void;
+  onSubmit: (params: {
+    modelTier: ModelTier;
+    worldParams: WorldParameters;
+  }) => void;
   isGenerating: boolean;
+  onBack?: () => void;
 }
 
-export default function WorldSetupForm({ onSubmit, isGenerating }: WorldSetupFormProps) {
-  const [modelTier, setModelTier] = useState<ModelTier>('free');
+export default function WorldSetupForm({
+  onSubmit,
+  isGenerating,
+  onBack,
+}: WorldSetupFormProps) {
+  const [modelTier, setModelTier] = useState<ModelTier>("budget");
   const [worldParams, setWorldParams] = useState<WorldParameters>({});
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,43 +27,67 @@ export default function WorldSetupForm({ onSubmit, isGenerating }: WorldSetupFor
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-          Create Your Adventure
-        </h3>
+      <div className="bg-parchment-secondary rounded-xl border border-parchment p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="p-2 text-parchment-primary hover:text-parchment-primary hover:bg-parchment-tertiary rounded-lg transition-all"
+              aria-label="Go back"
+              type="button"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+            </button>
+          )}
+          <h3 className="text-lg font-semibold text-parchment-primary">
+            Create Your Adventure
+          </h3>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Model Tier */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-parchment-secondary mb-2">
               Model Tier
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setModelTier('free')}
+                onClick={() => setModelTier("budget")}
                 className={`p-3 rounded-lg border-2 text-left transition-all ${
-                  modelTier === 'free'
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                  modelTier === "budget"
+                    ? "border-accent-parchment bg-parchment-tertiary"
+                    : "border-parchment hover:border-accent-parchment"
                 }`}
               >
-                <div className="font-medium text-slate-900 dark:text-slate-100">Free</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <div className="font-medium text-parchment-primary">Budget</div>
+                <div className="text-xs text-parchment-muted mt-0.5">
                   Gemini Flash + Claude Haiku
                 </div>
               </button>
               <button
                 type="button"
-                onClick={() => setModelTier('pro')}
+                onClick={() => setModelTier("pro")}
                 className={`p-3 rounded-lg border-2 text-left transition-all ${
-                  modelTier === 'pro'
-                    ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                  modelTier === "pro"
+                    ? "border-accent-parchment bg-parchment-tertiary"
+                    : "border-parchment hover:border-accent-parchment"
                 }`}
               >
-                <div className="font-medium text-slate-900 dark:text-slate-100">Pro</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <div className="font-medium text-parchment-primary">Pro</div>
+                <div className="text-xs text-parchment-muted mt-0.5">
                   Gemini Pro + Claude Sonnet
                 </div>
               </button>
@@ -64,66 +96,81 @@ export default function WorldSetupForm({ onSubmit, isGenerating }: WorldSetupFor
 
           {/* World Type */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              World Type <span className="text-slate-400">(optional)</span>
+            <label className="block text-sm font-medium text-parchment-secondary mb-2">
+              World Type{" "}
+              <span className="text-parchment-muted">(optional)</span>
             </label>
             <input
               type="text"
               placeholder="e.g., Cultivation Fantasy, Space Opera..."
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={worldParams.worldType || ''}
-              onChange={(e) => setWorldParams({ ...worldParams, worldType: e.target.value })}
+              className="w-full px-3 py-2 border border-parchment rounded-lg bg-parchment-primary text-parchment-primary placeholder-parchment-muted focus:outline-none focus:ring-2 focus:ring-accent-parchment"
+              value={worldParams.worldType || ""}
+              onChange={(e) =>
+                setWorldParams({ ...worldParams, worldType: e.target.value })
+              }
             />
           </div>
 
           {/* Power System */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Power System <span className="text-slate-400">(optional)</span>
+            <label className="block text-sm font-medium text-parchment-secondary mb-2">
+              Power System{" "}
+              <span className="text-parchment-muted">(optional)</span>
             </label>
             <input
               type="text"
               placeholder="e.g., Qi Cultivation, Magic Circles..."
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={worldParams.powerSystem || ''}
-              onChange={(e) => setWorldParams({ ...worldParams, powerSystem: e.target.value })}
+              className="w-full px-3 py-2 border border-parchment rounded-lg bg-parchment-primary text-parchment-primary placeholder-parchment-muted focus:outline-none focus:ring-2 focus:ring-accent-parchment"
+              value={worldParams.powerSystem || ""}
+              onChange={(e) =>
+                setWorldParams({ ...worldParams, powerSystem: e.target.value })
+              }
             />
           </div>
 
           {/* Starting Class */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Starting Social Class <span className="text-slate-400">(optional)</span>
+            <label className="block text-sm font-medium text-parchment-secondary mb-2">
+              Starting Social Class{" "}
+              <span className="text-parchment-muted">(optional)</span>
             </label>
             <input
               type="text"
               placeholder="e.g., Peasant, Merchant, Noble..."
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={worldParams.startingClass || ''}
-              onChange={(e) => setWorldParams({ ...worldParams, startingClass: e.target.value })}
+              className="w-full px-3 py-2 border border-parchment rounded-lg bg-parchment-primary text-parchment-primary placeholder-parchment-muted focus:outline-none focus:ring-2 focus:ring-accent-parchment"
+              value={worldParams.startingClass || ""}
+              onChange={(e) =>
+                setWorldParams({
+                  ...worldParams,
+                  startingClass: e.target.value,
+                })
+              }
             />
           </div>
 
           {/* Custom Instructions */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Custom Instructions <span className="text-slate-400">(optional)</span>
+            <label className="block text-sm font-medium text-parchment-secondary mb-2">
+              Custom Instructions{" "}
+              <span className="text-parchment-muted">(optional)</span>
             </label>
             <textarea
               placeholder="Any additional instructions for world generation..."
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-parchment rounded-lg bg-parchment-primary text-parchment-primary placeholder-parchment-muted focus:outline-none focus:ring-2 focus:ring-accent-parchment resize-none"
               rows={3}
-              value={worldParams.customPrompt || ''}
-              onChange={(e) => setWorldParams({ ...worldParams, customPrompt: e.target.value })}
+              value={worldParams.customPrompt || ""}
+              onChange={(e) =>
+                setWorldParams({ ...worldParams, customPrompt: e.target.value })
+              }
             />
           </div>
 
           <button
             type="submit"
             disabled={isGenerating}
-            className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-2.5 px-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-accent-parchment hover:opacity-80 text-parchment-primary py-2.5 px-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
           >
-            {isGenerating ? 'Generating...' : 'Start Adventure'}
+            {isGenerating ? "Generating..." : "Start Adventure"}
           </button>
         </form>
       </div>

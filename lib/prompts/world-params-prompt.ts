@@ -1,10 +1,24 @@
-import { WorldParameters } from '@/types';
+import { WorldParameters } from "@/types";
 
 /**
  * Generate user prompt for world generation based on parameters
  */
 export function generateWorldParametersPrompt(params: WorldParameters): string {
-  const { genre, setting, theme, difficulty } = params;
+  const genre = params.genre || "Any";
+  const setting = params.setting || "Any";
+  const theme = params.theme || "Any";
+  const difficulty = params.difficulty || "Medium";
+
+  return `Please generate a complete world with these specifications:
+
+**Genre:** ${genre}
+**Setting:** ${setting}
+**Theme:** ${theme}
+**Difficulty:** ${difficulty}
+
+Please use randomness to generate the sections of the complete story bible.
+
+Output the complete bible in bible tags,  and a short descriptive name in chat_name tags.`;
 
   return `Please generate a complete world and starting character with these specifications:
 
@@ -21,5 +35,5 @@ Ensure the world matches the ${genre} genre with ${setting} setting and ${theme}
 - Complexity of conspiracies and traps
 - Survival rates and mortality risks
 
-Output the complete bible in <bible></bible> tags, starting character in <character></character> tags, and a short descriptive name in <chat_name></chat_name> tags.`;
+Output the complete bible in <bible></bible> tags,  and a short descriptive name in <chat_name></chat_name> tags.`;
 }

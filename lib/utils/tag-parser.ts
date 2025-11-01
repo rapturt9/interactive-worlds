@@ -105,24 +105,30 @@ export function parseWorldGenerationTags(text: string): ParsedTags {
 /**
  * Process content for display based on debug mode
  * Removes <thinking> tags in non-debug mode
- * Converts <spoiler> tags to markdown spoiler blocks
+ * Converts <spoiler>, <bible>, <character> tags to markdown blocks
  */
 export function processContentForDisplay(text: string, debugMode: boolean): string {
   let result = text;
 
-  // Remove thinking tags if not in debug mode
-  if (!debugMode) {
-    result = removeTag(result, 'thinking');
-  }
-
-  // Convert spoiler tags to markdown spoiler blocks
+  // Convert spoiler tags to markdown spoiler blocks (always shown in debug mode)
   result = result.replace(/<spoiler>/g, '```spoiler\n');
   result = result.replace(/<\/spoiler>/g, '\n```');
 
-  // Convert thinking tags to markdown thinking blocks (for debug mode)
+  // In debug mode, show thinking, bible, and character as markdown blocks
   if (debugMode) {
     result = result.replace(/<thinking>/g, '```thinking\n');
     result = result.replace(/<\/thinking>/g, '\n```');
+
+    result = result.replace(/<bible>/g, '```bible\n');
+    result = result.replace(/<\/bible>/g, '\n```');
+
+    result = result.replace(/<character>/g, '```character\n');
+    result = result.replace(/<\/character>/g, '\n```');
+  } else {
+    // In production mode, remove thinking, bible, and character tags entirely
+    result = removeTag(result, 'thinking');
+    result = removeTag(result, 'bible');
+    result = removeTag(result, 'character');
   }
 
   return result.trim();
