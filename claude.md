@@ -64,6 +64,6 @@ If implementation details are unclear:
 
 Please use these models:
 
-- Free: anthropic/claude-haiku-4.5 + google/gemini-2.5-flash
+- Budget: anthropic/claude-haiku-4.5 + google/gemini-2.5-flash
 
 - Pro: anthropic/claude-sonnet-4.5 + google/gemini-2.5-pro

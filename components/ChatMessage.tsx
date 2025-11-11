@@ -411,18 +411,7 @@ function MessageContent({
     [showDebug]
   );
 
-  // OPTIMIZATION: Show raw text during streaming (fast), markdown when complete (beautiful)
-  if (isStreaming && !isSystemMessage) {
-    return (
-      <div className="prose prose-sm max-w-none text-parchment-primary">
-        <div className="whitespace-pre-wrap">
-          {processedContent}
-          <span className="inline-block w-0.5 h-4 ml-1 bg-accent-parchment animate-pulse" />
-        </div>
-      </div>
-    );
-  }
-
+  // Always render markdown in real-time, even during streaming
   return (
     <div className="prose prose-sm max-w-none text-parchment-primary">
       <ReactMarkdown
@@ -431,6 +420,9 @@ function MessageContent({
       >
         {processedContent}
       </ReactMarkdown>
+      {isStreaming && !isSystemMessage && (
+        <span className="inline-block w-0.5 h-4 ml-1 bg-accent-parchment animate-pulse" />
+      )}
     </div>
   );
 }
@@ -504,19 +496,7 @@ function TextPart({
     [showDebug]
   );
 
-  // OPTIMIZATION: Show raw text during streaming (fast), markdown when complete (beautiful)
-  if (isStreaming && !isSystemMessage) {
-    return (
-      <div className="prose prose-sm max-w-none text-parchment-primary">
-        <div className="whitespace-pre-wrap">
-          {processedContent}
-          <span className="inline-block w-0.5 h-4 ml-1 bg-accent-parchment animate-pulse" />
-        </div>
-      </div>
-    );
-  }
-
-  // Render markdown when not streaming or when complete
+  // Always render markdown in real-time, even during streaming
   return (
     <div className="prose prose-sm max-w-none text-parchment-primary">
       <ReactMarkdown
@@ -525,6 +505,9 @@ function TextPart({
       >
         {processedContent}
       </ReactMarkdown>
+      {isStreaming && !isSystemMessage && (
+        <span className="inline-block w-0.5 h-4 ml-1 bg-accent-parchment animate-pulse" />
+      )}
     </div>
   );
 }

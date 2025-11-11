@@ -2,18 +2,12 @@
 
 import { Message } from '@/types';
 import { UIMessage } from 'ai';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
 import SystemPromptSwitch from './SystemPromptSwitch';
 
 interface MessagesAreaProps {
-  // For gameplay phase
-  messages?: Message[];
-  // For world/character generation phase
-  worldGenMessages?: UIMessage[];
-  charGenMessages?: UIMessage[];
-  systemMessages?: Message[];
-
+  messages: UIMessage[] | Message[];
   showDebug: boolean;
   generationPhase?: string; // world, character, chat0, etc.
   isGeneratingWorld?: boolean;
@@ -31,9 +25,6 @@ interface MessagesAreaProps {
  */
 function MessagesArea({
   messages,
-  worldGenMessages,
-  charGenMessages,
-  systemMessages,
   showDebug,
   generationPhase = 'world',
   isGeneratingWorld = false,
@@ -46,60 +37,55 @@ function MessagesArea({
   onGenerateCharacter,
 }: MessagesAreaProps) {
   // Optimize: Use message counts instead of full arrays to prevent recalculation on every streaming chunk
-  const messageCount = messages?.length || 0;
-  const worldGenCount = worldGenMessages?.length || 0;
-  const charGenCount = charGenMessages?.length || 0;
-  const systemCount = systemMessages?.length || 0;
+  const messageCount = messages.length;
 
   // Memoize message filtering - only recalculate when structure changes, not content
   const filteredMessages = useMemo(() => {
-    // If we have gameplay messages, use the old filtering logic
-    if (messages) {
-      if (showDebug) {
-        return messages;
-      }
+    // prepareVisualMessages already handles filtering and phase markers
+    return messages;
+  }, [messageCount, showDebug, messages]);
 
-      // Find the gameplay system prompt switch
-      const gameplaySwitchIndex = messages.findIndex(
-        (m) => m.role === 'system-switch' && m.switchTo === 'gameplay'
-      );
+  // Scroll management - preserve position or auto-scroll to bottom
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const wasAtBottomRef = useRef(true); // Track if user was at bottom before update
 
-      if (gameplaySwitchIndex === -1) {
-        return [];
-      }
+  // Check if user is at bottom (within 100px threshold)
+  const isAtBottom = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return true;
+    const threshold = 100;
+    return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+  };
 
-      const firstGameplayResponseIndex = messages.findIndex(
-        (m, idx) => idx > gameplaySwitchIndex && m.role === 'assistant'
-      );
+  // Auto-scroll to bottom when new messages arrive (only if user was already at bottom)
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-      if (firstGameplayResponseIndex === -1) {
-        return [];
-      }
-
-      return messages.slice(firstGameplayResponseIndex);
+    // If user was at bottom, scroll to bottom to show new content
+    if (wasAtBottomRef.current) {
+      container.scrollTop = container.scrollHeight;
     }
+    // Otherwise preserve current position (user is reading history)
+  }, [messageCount, isSending, isGeneratingWorld, isGeneratingCharacter]);
 
-    // For world/character generation: combine system messages with useChat messages
-    // Only show system messages in debug mode
-    const combined: any[] = showDebug ? [...(systemMessages || [])] : [];
+  // Track scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-    // Add world generation messages
-    if (worldGenMessages && worldGenMessages.length > 0) {
-      combined.push(...worldGenMessages);
-    }
+    const handleScroll = () => {
+      wasAtBottomRef.current = isAtBottom();
+    };
 
-    // Add character generation messages
-    if (charGenMessages && charGenMessages.length > 0) {
-      combined.push(...charGenMessages);
-    }
-
-    return combined;
-  }, [messageCount, worldGenCount, charGenCount, systemCount, showDebug, messages, worldGenMessages, charGenMessages, systemMessages]);
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden min-h-0">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto relative min-h-0">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto relative min-h-0">
         {/* Top gradient fade for immersion */}
         <div
           className="absolute top-0 left-0 right-0 h-20 pointer-events-none z-10"
@@ -123,7 +109,7 @@ function MessagesArea({
             const isStreaming = isLastMessage && isAssistantMessage && (isGeneratingWorld || isGeneratingCharacter || isSending);
 
             return (
-              <div key={message.id}>
+              <div key={`${message.id}-${(message as any).phase || 'unknown'}`}>
                 {isSystemSwitch && <SystemPromptSwitch />}
                 <ChatMessage
                   message={message}
@@ -156,22 +142,32 @@ function MessagesArea({
             </div>
           )}
 
-          {/* Gameplay Message Loading */}
-          {isSending && (
-            <div className="bg-parchment-secondary border border-parchment p-4 rounded-lg">
-              <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent-parchment"></div>
-                <span className="text-sm text-parchment-secondary">
-                  Game Master is thinking...
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Gameplay Message Loading - Only show before first token arrives */}
+          {isSending && (() => {
+            const lastMessage = filteredMessages[filteredMessages.length - 1];
+            const hasStreamingContent = lastMessage?.role === 'assistant' &&
+              (lastMessage as any).parts?.some((p: any) => p.type === 'text' && p.text?.length > 0);
+
+            // Only show placeholder if we don't have streaming content yet
+            if (!hasStreamingContent) {
+              return (
+                <div className="bg-parchment-secondary border border-parchment p-4 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-accent-parchment"></div>
+                    <span className="text-sm text-parchment-secondary">
+                      Game Master is thinking...
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
         </div>
       </div>
 
-      {/* Character Generation Button */}
-      {showCharacterButton && onGenerateCharacter && (
+      {/* Character Generation Button - Only show in debug mode */}
+      {showDebug && showCharacterButton && onGenerateCharacter && (
         <div className="flex-shrink-0 border-t border-parchment bg-parchment-primary p-6">
           <div className="max-w-md mx-auto text-center">
             <p className="text-parchment-secondary mb-4">
@@ -188,8 +184,8 @@ function MessagesArea({
         </div>
       )}
 
-      {/* Proceed to Gameplay Button */}
-      {showProceedButton && onProceedToGameplay && (
+      {/* Proceed to Gameplay Button - Only show in debug mode */}
+      {showDebug && showProceedButton && onProceedToGameplay && (
         <div className="flex-shrink-0 border-t border-parchment bg-parchment-primary p-6">
           <div className="max-w-md mx-auto text-center">
             <p className="text-parchment-secondary mb-4">

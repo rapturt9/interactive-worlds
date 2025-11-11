@@ -45,3 +45,9 @@ next-env.d.ts
 .ipynb_checkpoints/
 test_results/
 /.quibbler
+
+# map generation outputs
+/outputs/*.png
+/outputs/*.jpg
+/outputs/*.jpeg
+/outputs/*.webp

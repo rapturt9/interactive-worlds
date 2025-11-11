@@ -5,7 +5,7 @@ import { UIMessage } from 'ai';
 import WorldSetupForm from './WorldSetupForm';
 import MessagesArea from './MessagesArea';
 import InputArea from './InputArea';
-import GenerationLoadingState from './GenerationLoadingState';
+import EnhancedLoadingState from './EnhancedLoadingState';
 
 interface WorldGenerationPhaseProps {
   showSetupForm: boolean;
@@ -14,6 +14,8 @@ interface WorldGenerationPhaseProps {
   onWorldSetup: (params: { modelTier: ModelTier; worldParams: WorldParameters }) => Promise<void>;
   showCharacterButton: boolean;
   onGenerateCharacter: () => void;
+  showProceedButton: boolean;
+  onProceedToGameplay: () => void;
   showDebug: boolean;
   generationPhase: string;
   worldGenMessages: UIMessage[];
@@ -22,6 +24,7 @@ interface WorldGenerationPhaseProps {
   onEditMessage: (messageId: string, newContent: string) => Promise<void>;
   onBack?: () => void;
   theme: 'light-parchment' | 'dark-parchment'; // Add theme prop for loading animation
+  onFormSubmittingChange?: (isSubmitting: boolean) => void;
 }
 
 /**
@@ -35,6 +38,8 @@ export default function WorldGenerationPhase({
   onWorldSetup,
   showCharacterButton,
   onGenerateCharacter,
+  showProceedButton,
+  onProceedToGameplay,
   showDebug,
   generationPhase,
   worldGenMessages,
@@ -43,6 +48,7 @@ export default function WorldGenerationPhase({
   onEditMessage,
   onBack,
   theme,
+  onFormSubmittingChange,
 }: WorldGenerationPhaseProps) {
   // Input should ALWAYS be visible when there are messages OR when generation is active
   // This applies to both debug and production modes
@@ -54,14 +60,21 @@ export default function WorldGenerationPhase({
   return (
     <div className="flex-1 flex flex-col overflow-hidden min-h-0">
       {showSetupForm ? (
-        <div className="flex-1 overflow-y-auto flex items-center justify-center">
-          <div className="max-w-4xl mx-auto w-full px-8 py-6">
-            <WorldSetupForm onSubmit={onWorldSetup} isGenerating={isGenerating} onBack={onBack} />
+        <div className="flex-1 overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center py-4 sm:py-6">
+            <div className="w-full">
+              <WorldSetupForm
+                onSubmit={onWorldSetup}
+                isGenerating={isGenerating}
+                onBack={onBack}
+                onSubmittingChange={onFormSubmittingChange}
+              />
+            </div>
           </div>
         </div>
       ) : showLoadingAnimation ? (
-        // PRODUCTION MODE: Show loading animation instead of messages
-        <GenerationLoadingState
+        // PRODUCTION MODE: Show enhanced loading animation instead of messages
+        <EnhancedLoadingState
           phase={isGeneratingCharacter ? 'character' : 'world'}
           theme={theme}
         />
@@ -79,6 +92,8 @@ export default function WorldGenerationPhase({
             onEditMessage={onEditMessage}
             showCharacterButton={showCharacterButton}
             onGenerateCharacter={onGenerateCharacter}
+            showProceedButton={showProceedButton}
+            onProceedToGameplay={onProceedToGameplay}
           />
 
           {/* Show input area in debug mode - always disabled during world gen */}

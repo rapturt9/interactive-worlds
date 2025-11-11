@@ -267,7 +267,7 @@ export default function Home() {
           <h1 className="text-2xl font-bold">Interactive Worlds</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm bg-white/20 px-3 py-1 rounded-full">
-              {modelTier === 'budget' ? 'Free Tier' : 'Pro Tier'}
+              {modelTier === 'budget' ? 'Budget Tier' : 'Pro Tier'}
             </span>
             <button
               onClick={() => {

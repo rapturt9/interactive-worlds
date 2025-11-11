@@ -32,4 +32,5 @@ Create a concise world bible and chat name
 - Create a living world with events that will happen regardless of any individual
 - ALL random tool calls should be in the <thinking> section
 - Output <bible> and <chat_name> tags AFTER all tool use is complete
+- Be extremely concise and to the point in your response.
 `;

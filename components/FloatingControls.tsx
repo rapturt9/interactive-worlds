@@ -9,6 +9,7 @@ interface FloatingControlsProps {
   showDebug: boolean;
   onDebugChange: (value: boolean) => void;
   generationPhase?: string; // world, character, chat0, etc.
+  isMenuOpen?: boolean; // Hide on mobile when sidebar is open
 }
 
 /**
@@ -21,6 +22,7 @@ export default function FloatingControls({
   showDebug,
   onDebugChange,
   generationPhase,
+  isMenuOpen = false,
 }: FloatingControlsProps) {
   const [isLocalEnv, setIsLocalEnv] = useState(false);
   const isDark = theme === 'dark-parchment';
@@ -30,8 +32,10 @@ export default function FloatingControls({
   }, []);
 
   return (
-    <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 backdrop-blur-sm border rounded-lg px-3 py-2 shadow-lg ${
+    <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 backdrop-blur-sm border rounded-lg px-3 py-2 shadow-lg transition-opacity duration-300 ${
       isDark ? 'bg-parchment-tertiary/90 border-white/20' : 'bg-parchment-secondary/90 border-parchment'
+    } ${
+      isMenuOpen ? 'max-md:hidden' : ''
     }`}>
       {/* Theme Toggle */}
       <button

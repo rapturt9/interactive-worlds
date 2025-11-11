@@ -167,20 +167,38 @@ function prepareDebugMessages(
 /**
  * Prepare messages for production mode
  * Shows only chat0+ messages, deduplicated by message ID, with gameplay system prompt
+ * DEFENSIVE: Triple-layer filtering to ensure world/character messages never appear
  */
 function prepareProductionMessages(
   dbMessages: Message[],
   bibleContent?: string,
   characterContent?: string
 ): Message[] {
-  // Filter to only chat0+ phases (skip world and character generation)
+  // LAYER 1: Filter to only chat0+ phases (skip world and character generation)
   const chatMessages = dbMessages.filter(msg => {
     const phase = (msg as any).phase || 'world';
     return phase.startsWith('chat');
   });
 
-  // Deduplicate by message ID (messages are copied across phases)
-  const deduplicated = deduplicateByMessageId(chatMessages);
+  // LAYER 2: Additional defensive filter - remove any system prompts or phase markers
+  const cleanedMessages = chatMessages.filter(msg => {
+    // Skip system prompts (they're inserted dynamically)
+    if (msg.role === 'system') return false;
+    // Skip phase markers
+    if ((msg as any).role === 'phase-marker') return false;
+    // Skip extraction confirmation messages (contain specific patterns)
+    if (msg.content?.includes('extracted successfully')) return false;
+    if (msg.content?.includes('Starting') && msg.content?.includes('Phase')) return false;
+    return true;
+  });
+
+  // LAYER 3: Deduplicate by message ID (messages are copied across phases)
+  const deduplicated = deduplicateByMessageId(cleanedMessages);
+
+  // If no messages, return empty (don't show system prompt alone)
+  if (deduplicated.length === 0) {
+    return [];
+  }
 
   // Insert gameplay system prompt at the beginning
   const systemPrompt = generateSystemPrompt(bibleContent || '', characterContent || '');
@@ -194,6 +212,14 @@ function prepareProductionMessages(
     },
     ...deduplicated,
   ];
+
+  console.log('🔒 Production message filtering:', {
+    inputTotal: dbMessages.length,
+    afterPhaseFilter: chatMessages.length,
+    afterCleanup: cleanedMessages.length,
+    afterDedup: deduplicated.length,
+    finalCount: result.length,
+  });
 
   return result;
 }

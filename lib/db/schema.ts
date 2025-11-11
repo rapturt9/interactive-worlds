@@ -24,7 +24,8 @@ export async function initializeDatabase() {
         character_content TEXT,
         conversation_state TEXT DEFAULT 'world_generation',
         generation_phase VARCHAR(50) DEFAULT 'world',
-        original_bible_content TEXT
+        original_bible_content TEXT,
+        current_turn INTEGER DEFAULT 0
       )
     `;
 
@@ -37,6 +38,7 @@ export async function initializeDatabase() {
         phase VARCHAR(50) NOT NULL DEFAULT 'world',
         role TEXT NOT NULL,
         content TEXT NOT NULL,
+        parts JSONB,
         timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         PRIMARY KEY (id, chat_id, phase),
         FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE
@@ -84,8 +86,46 @@ export async function migrateDatabase() {
   }
 }
 
+// Add parts column to existing messages table (non-destructive migration)
+export async function addPartsColumn() {
+  try {
+    console.log('🔄 Adding parts column to messages table...');
+
+    // Add parts column if it doesn't exist
+    await sql`
+      ALTER TABLE messages
+      ADD COLUMN IF NOT EXISTS parts JSONB
+    `;
+
+    console.log('✅ Parts column added successfully!');
+  } catch (error) {
+    console.error('❌ Failed to add parts column:', error);
+    throw error;
+  }
+}
+
+// Add current_turn column to existing chats table (non-destructive migration)
+export async function addCurrentTurnColumn() {
+  try {
+    console.log('🔄 Adding current_turn column...');
+
+    // Add column if it doesn't exist
+    await sql`
+      ALTER TABLE chats
+      ADD COLUMN IF NOT EXISTS current_turn INTEGER DEFAULT 0
+    `;
+
+    console.log('✅ current_turn column added successfully!');
+  } catch (error) {
+    console.error('❌ Failed to add current_turn column:', error);
+    throw error;
+  }
+}
+
 // Initialize on module load (for development)
 // In production, you might want to run this as a separate migration script
 if (process.env.NODE_ENV !== 'production') {
-  initializeDatabase().catch(console.error);
+  initializeDatabase()
+    .then(() => addPartsColumn())
+    .catch(console.error);
 }

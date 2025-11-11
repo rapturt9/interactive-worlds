@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addMessage, updateMessage, deleteMessagesAfter } from '@/lib/db/queries';
+import { addMessage, updateMessage, deleteMessagesAfter, getMessages } from '@/lib/db/queries';
 import { getUserId } from '@/lib/auth/user-id';
+
+// GET messages for a chat (optionally filtered by phase)
+export async function GET(req: NextRequest) {
+  try {
+    const userId = await getUserId();
+    const { searchParams } = new URL(req.url);
+    const chatId = searchParams.get('chatId');
+    const phase = searchParams.get('phase');
+
+    if (!chatId) {
+      return NextResponse.json(
+        { error: 'Missing chatId parameter' },
+        { status: 400 }
+      );
+    }
+
+    const messages = await getMessages(chatId, userId, phase || undefined);
+    return NextResponse.json({ messages });
+  } catch (error) {
+    console.error('[GET /api/messages] Error fetching messages:', error);
+    return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
+  }
+}
 
 // POST add message
 export async function POST(req: NextRequest) {

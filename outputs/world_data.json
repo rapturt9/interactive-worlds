@@ -1,0 +1,190 @@
+{
+  "eldermyst": {
+    "size_meters": 64000,
+    "layers": [
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [
+          1,
+          2
+        ],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down view, fantasy style, no text labels, no legends.\n\n**Overall Layout:** A single large, roughly rectangular continent fills the majority of the canvas, centered horizontally and vertically. The continent is surrounded on all sides by a vast, deep blue ocean. The map should feel expansive and ancient.\n\n**Ocean:**\n*   **Color:** Deep, rich blue (#003366) for the main ocean, fading slightly to a lighter blue (#006699) near coastlines.\n*   **Texture:...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 0
+      },
+      {
+        "depth": 1,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 1000,
+          "height_m": 1000
+        },
+        "size_m": 1000,
+        "parent_id": 0,
+        "children": [],
+        "prompt": "A high-detail pixel art map tile, 1024x1024 pixels, depicting a 1km x 1km section of the Eldermyst world map. The entire tile is deep ocean, consistent with the parent map's dark blue water. The water should be textured with subtle pixel art waves and ripples, showing slight variations in shade to imply depth and movement. The edges of the tile should seamlessly blend with the surrounding ocean, maintaining the consistent dark blue color. No landmass, islands, or any other features should be pre...",
+        "image_path": "outputs/tiles/eldermyst_tile_0_0_1000m.png",
+        "layer_id": 1
+      },
+      {
+        "depth": 1,
+        "coordinates": {
+          "x_m": 1000,
+          "y_m": 0,
+          "width_m": 1000,
+          "height_m": 1000
+        },
+        "size_m": 1000,
+        "parent_id": 0,
+        "children": [],
+        "prompt": "pixel art map tile, 1024x1024 pixels, Eldermyst world, top-down view. This tile represents a 1.00km x 1.00km section of the ocean, located at (1000, 0) meters from the parent map's top-left. The entire canvas should be filled with deep blue ocean water, consistent with the style and color palette of the parent map and sibling tiles. The ocean should have subtle, pixelated wave patterns and variations in shade to indicate depth and movement, matching the detail level of the sibling tile (0,0). Th...",
+        "image_path": "outputs/tiles/eldermyst_ctxt_1000_0_1000m.png",
+        "layer_id": 2
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 3
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 4
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 5
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 6
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 7
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 8
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "```\npixel art world map, 1024x1024 pixels, top-down orthogonal view, 16-bit SNES style, vibrant saturated colors, high contrast, clean crisp pixels, careful dithering for textures, consistent lighting from top-left.\n\nThe map depicts the continent of Eldermyst, filling the entire 1024x1024 canvas. The scale is 1 pixel = 62.5 meters, meaning the map covers 64km x 64km.\n\n**Ocean:** The entire outer perimeter of the map is a deep, rich blue ocean, extending inwards from all four edges. The ocean sho...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 9
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "A 1024x1024 pixel art world map, 16-bit SNES era style, top-down orthogonal view, with consistent top-left lighting. The map depicts a large, roughly rectangular continent filling the majority of the square canvas, surrounded on all sides by a vast, deep blue ocean. The ocean should have subtle wave patterns and a slightly darker blue border where it meets the land.\n\nThe continent is dominated by a massive, winding river, appearing as a bright, flowing blue ribbon, originating from the northern ...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 10
+      },
+      {
+        "depth": 0,
+        "coordinates": {
+          "x_m": 0,
+          "y_m": 0,
+          "width_m": 64000,
+          "height_m": 64000
+        },
+        "size_m": 64000,
+        "parent_id": null,
+        "children": [],
+        "prompt": "A 1024x1024 pixel art world map, 16-bit SNES era style, top-down orthogonal view, with consistent top-left lighting. The map depicts a large, roughly rectangular continent filling the majority of the square canvas, surrounded on all sides by a vast, deep blue ocean. The ocean should have subtle wave patterns and a slightly darker blue border where it meets the land.\n\nThe continent is dominated by a massive, winding river, appearing as a bright, flowing blue ribbon, originating from the northern ...",
+        "image_path": "outputs/eldermyst_layer0_64km.png",
+        "layer_id": 11
+      }
+    ]
+  }
+}

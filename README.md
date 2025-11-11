@@ -21,7 +21,7 @@ An immersive text-based adventure platform with persistent worlds, dynamic story
 
  **Dual Model Architecture**
 
-- **Free Tier**: Gemini 2.0 Flash + Claude 3.5 Haiku
+- **Budget Tier**: Gemini 2.0 Flash + Claude 3.5 Haiku
 - **Pro Tier**: Gemini Exp 1206 + Claude Sonnet 4
 - Prompt caching for cost efficiency and speed
 
@@ -78,7 +78,7 @@ npm run dev
 
 ### Creating a New World
 
-1. Choose your model tier (Free or Pro)
+1. Choose your model tier (Budget or Pro)
 2. Optionally customize:
    - World Type (e.g., "Cultivation Fantasy", "Space Opera")
    - Power System (e.g., "Qi Cultivation", "Magic Circles")
@@ -116,7 +116,7 @@ The game maintains a hidden "story bible" containing:
 
 ## Model Costs (Approximate)
 
-### Free Tier
+### Budget Tier
 
 - ~$0.10-0.30 per 100-300 turn adventure
 - Faster responses with Gemini Flash

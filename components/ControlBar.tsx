@@ -37,7 +37,7 @@ export default function ControlBar({
         </h1>
         {currentChatId && (
           <span className="px-2 py-1 text-xs bg-parchment-tertiary text-parchment-secondary rounded">
-            {modelTier === "budget" ? "Free Tier" : "Pro Tier"}
+            {modelTier === "budget" ? "Budget Tier" : "Pro Tier"}
           </span>
         )}
       </div>

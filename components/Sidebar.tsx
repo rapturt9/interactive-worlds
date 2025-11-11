@@ -96,14 +96,12 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(function Sidebar(
 
   const handleDelete = async (chatId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm("Delete this conversation?")) {
-      try {
-        await fetch(`/api/chats?id=${chatId}`, { method: "DELETE" });
-        setChats(chats.filter((c) => c.id !== chatId));
-        onDeleteChat(chatId);
-      } catch (error) {
-        console.error("Failed to delete chat:", error);
-      }
+    try {
+      await fetch(`/api/chats?id=${chatId}`, { method: "DELETE" });
+      setChats(chats.filter((c) => c.id !== chatId));
+      onDeleteChat(chatId);
+    } catch (error) {
+      console.error("Failed to delete chat:", error);
     }
   };
 
@@ -123,7 +121,7 @@ const Sidebar = forwardRef<SidebarRef, SidebarProps>(function Sidebar(
             </h2>
             {modelTier && (
               <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-parchment-tertiary text-parchment-secondary rounded">
-                {modelTier === "budget" ? "Free Tier" : "Pro Tier"}
+                {modelTier === "budget" ? "Budget Tier" : "Pro Tier"}
               </span>
             )}
           </div>

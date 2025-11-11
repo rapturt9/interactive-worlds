@@ -1,0 +1,1 @@
+export const GAMEPLAY_INITIAL_USER_PROMPT = `Please tell me about my character, their history, and what they know about the world. Then describe my current situation and offer me 3-4 possible actions.`;

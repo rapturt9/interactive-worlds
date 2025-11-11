@@ -41,7 +41,7 @@ export default function GameplayPhase({
   return (
     <div className="flex-1 flex flex-col overflow-hidden min-h-0">
       <MessagesArea
-        worldGenMessages={messages}
+        messages={messages}
         showDebug={showDebug}
         generationPhase={generationPhase}
         isSending={isSending}
