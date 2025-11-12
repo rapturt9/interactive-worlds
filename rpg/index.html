@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenney Dungeon Explorer - First Person</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: #fff;
+            transition: opacity 0.3s;
+        }
+
+        #overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #overlay h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ffa500;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        #overlay p {
+            font-size: 1.2em;
+            margin: 10px 0;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #start-button {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.5em;
+            font-family: 'Courier New', monospace;
+            background: #ffa500;
+            border: 3px solid #ff8c00;
+            color: #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        #start-button:hover {
+            background: #ff8c00;
+            transform: scale(1.05);
+        }
+
+        #instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 100;
+            max-width: 250px;
+        }
+
+        #instructions h3 {
+            color: #ffa500;
+            margin-bottom: 10px;
+        }
+
+        #instructions p {
+            margin: 5px 0;
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffa500;
+            font-size: 1.5em;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #loading.active {
+            display: block;
+        }
+
+        .key {
+            display: inline-block;
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin: 0 2px;
+            border: 1px solid #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading">Loading dungeon assets...</div>
+
+    <!-- Start Overlay -->
+    <div id="overlay">
+        <h1>🏰 DUNGEON EXPLORER</h1>
+        <p>A procedurally generated dungeon using Kenney's modular assets</p>
+        <p>Navigate through the corridors and rooms in first-person view</p>
+        <button id="start-button">CLICK TO ENTER</button>
+    </div>
+
+    <!-- Instructions Panel -->
+    <div id="instructions">
+        <h3>Controls</h3>
+        <p><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> - Move</p>
+        <p><span class="key">Mouse</span> - Look around</p>
+        <p><span class="key">ESC</span> - Release mouse</p>
+        <p><span class="key">R</span> - New dungeon</p>
+    </div>
+
+    <!-- Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Three.js from CDN -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <!-- Main Application -->
+    <script type="module" src="dungeon.js"></script>
+</body>
+</html>
